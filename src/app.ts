@@ -4,10 +4,6 @@
  * Ce fichier configure et démarre le serveur Express.
  * Il initialise les middlewares, les sessions et les routes.
  *
- * FAILLES DE SÉCURITÉ VOLONTAIRES:
- * - Secret de session faible et en dur
- * - Pas de protection CSRF
- * - Pas de helmet pour les headers de sécurité
  *
  * @module app
  */

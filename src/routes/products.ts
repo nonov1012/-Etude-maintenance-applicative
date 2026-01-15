@@ -8,9 +8,6 @@
  * - Suppression d'un produit (Delete)
  * - Calcul du total de l'inventaire
  *
- * BUG VOLONTAIRE: Dans le calcul du total, une erreur de logique
- * fait que le total est mal calculé.
- *
  * @module routes/products
  */
 
@@ -171,10 +168,6 @@ router.get('/delete/:id', async (req: Request, res: Response) => {
 /**
  * GET /products/total
  * Calcule le total de l'inventaire (prix * quantité pour chaque produit)
- *
- * BUG VOLONTAIRE: Le calcul du total est incorrect!
- * Au lieu de faire price * quantity pour chaque produit,
- * on fait price + quantity (addition au lieu de multiplication)
  */
 router.get('/total', async (req: Request, res: Response) => {
     try {
@@ -184,10 +177,8 @@ router.get('/total', async (req: Request, res: Response) => {
 
         let total = 0;
 
-        // BUG: Utilisation de + au lieu de * pour le calcul
-        // Le calcul devrait être: total += product.price * product.quantity
         for (const product of products as Product[]) {
-            total += product.price + product.quantity;  // BUG ICI: + au lieu de *
+            total += Number(product.price) * Number(product.quantity);
         }
 
         res.render('total', {

@@ -122,24 +122,6 @@ siteweb-bug/
 - **Supprimer un produit** (`/products/delete/:id`) : Suppression d'un produit
 - **Calcul du total** (`/products/total`) : Calcule la valeur totale de l'inventaire
 
-## Notes importantes
-
-> **ATTENTION** : Ce projet contient **volontairement** des failles et des bugs pour les besoins du TP.
-
-### Bug volontaire
-
-Le calcul du total de l'inventaire est incorrect. Le bug se trouve dans `src/routes/products.ts` dans la fonction de calcul du total.
-
-### Failles de sécurité volontaires
-
-1. **Injection SQL** : La requête de connexion utilise la concaténation de chaînes au lieu de requêtes préparées (`src/routes/auth.ts`)
-2. **Mots de passe en clair** : Les mots de passe sont stockés sans hashage dans la base de données
-3. **Secret de session faible** : Le secret de session est codé en dur et trop simple (`src/app.ts`)
-4. **Credentials en dur** : Les identifiants de base de données sont dans le code source (`src/config/database.ts`)
-5. **XSS potentiel** : Certaines valeurs sont affichées sans échappement (`views/products.ejs`)
-
-**Ne pas utiliser ce code en production !**
-
 ## Scripts npm
 
 | Commande | Description |
