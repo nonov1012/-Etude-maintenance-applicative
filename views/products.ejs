@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits - Mini Site Web</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header avec navigation -->
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Mini Site Web</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/products" class="active">Produits</a></li>
+                <li><a href="/auth/logout">Déconnexion (<%= username %>)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenu principal -->
+    <main>
+        <section class="products-section">
+            <div class="products-header">
+                <h2>Liste des produits</h2>
+                <div class="products-actions">
+                    <a href="/products/add" class="btn btn-primary">Ajouter un produit</a>
+                    <a href="/products/total" class="btn btn-secondary">Calculer le total</a>
+                </div>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <% if (products.length === 0) { %>
+                <div class="empty-state">
+                    <p>Aucun produit trouvé.</p>
+                    <a href="/products/add" class="btn btn-primary">Ajouter votre premier produit</a>
+                </div>
+            <% } else { %>
+                <div class="table-container">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Description</th>
+                                <th>Prix</th>
+                                <th>Quantité</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% products.forEach(product => { %>
+                                <tr>
+                                    <td><%= product.id %></td>
+                                    <!-- FAILLE XSS potentielle: affichage direct sans échappement -->
+                                    <td><%- product.name %></td>
+                                    <td><%- product.description %></td>
+                                    <td><%= parseFloat(product.price).toFixed(2) %> &euro;</td>
+                                    <td><%= product.quantity %></td>
+                                    <td class="actions">
+                                        <a href="/products/edit/<%= product.id %>" class="btn btn-small btn-edit">
+                                            Modifier
+                                        </a>
+                                        <!-- FAILLE: Pas de confirmation avant suppression -->
+                                        <a href="/products/delete/<%= product.id %>" class="btn btn-small btn-delete">
+                                            Supprimer
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025-2026 - TP Maintenance Applicative - IUT du Littoral Côte d'Opale</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= action === 'add' ? 'Ajouter' : 'Modifier' %> un produit - Mini Site Web</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header avec navigation -->
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Mini Site Web</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/products" class="active">Produits</a></li>
+                <li><a href="/auth/logout">Déconnexion (<%= username %>)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenu principal -->
+    <main>
+        <section class="form-section">
+            <div class="form-container">
+                <h2><%= action === 'add' ? 'Ajouter un produit' : 'Modifier le produit' %></h2>
+
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-error">
+                        <%= error %>
+                    </div>
+                <% } %>
+
+                <!-- Formulaire produit -->
+                <form
+                    action="/products/<%= action === 'add' ? 'add' : 'edit/' + product.id %>"
+                    method="POST"
+                    class="product-form"
+                >
+                    <div class="form-group">
+                        <label for="name">Nom du produit *</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            required
+                            placeholder="Ex: Laptop HP"
+                            value="<%= product ? product.name : '' %>"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            placeholder="Description du produit..."
+                        ><%= product ? product.description : '' %></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Prix (&euro;) *</label>
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                step="0.01"
+                                min="0"
+                                required
+                                placeholder="0.00"
+                                value="<%= product ? product.price : '' %>"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quantity">Quantité *</label>
+                            <input
+                                type="number"
+                                id="quantity"
+                                name="quantity"
+                                min="0"
+                                required
+                                placeholder="0"
+                                value="<%= product ? product.quantity : '' %>"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <%= action === 'add' ? 'Ajouter' : 'Enregistrer' %>
+                        </button>
+                        <a href="/products" class="btn btn-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025-2026 - TP Maintenance Applicative - IUT du Littoral Côte d'Opale</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,98 @@
+/**
+ * Point d'entrée de l'application
+ *
+ * Ce fichier configure et démarre le serveur Express.
+ * Il initialise les middlewares, les sessions et les routes.
+ *
+ * FAILLES DE SÉCURITÉ VOLONTAIRES:
+ * - Secret de session faible et en dur
+ * - Pas de protection CSRF
+ * - Pas de helmet pour les headers de sécurité
+ *
+ * @module app
+ */
+
+import express, { Application, Request, Response } from 'express';
+import session from 'express-session';
+import path from 'path';
+
+// Import des routes
+import indexRoutes from './routes/index';
+import authRoutes from './routes/auth';
+import productsRoutes from './routes/products';
+
+// Création de l'application Express
+const app: Application = express();
+
+// Port du serveur (en dur - devrait être dans une variable d'environnement)
+const PORT = 3000;
+
+/**
+ * Configuration des middlewares
+ */
+
+// Parser pour les données de formulaire
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Fichiers statiques (CSS, images, etc.)
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Configuration du moteur de templates EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
+
+/**
+ * Configuration des sessions
+ *
+ * FAILLE DE SÉCURITÉ: Le secret est faible et stocké en dur
+ * En production, il devrait être:
+ * - Stocké dans une variable d'environnement
+ * - Long et aléatoire
+ * - Différent pour chaque environnement
+ */
+app.use(session({
+    secret: 'secret123',  // FAILLE: Secret faible et en dur!
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false,    // FAILLE: Devrait être true en HTTPS
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000  // 24 heures
+    }
+}));
+
+/**
+ * Configuration des routes
+ */
+app.use('/', indexRoutes);           // Routes de la page d'accueil
+app.use('/auth', authRoutes);        // Routes d'authentification
+app.use('/products', productsRoutes); // Routes CRUD des produits
+
+/**
+ * Route 404 - Page non trouvée
+ */
+app.use((req: Request, res: Response) => {
+    res.status(404).render('index', {
+        isLoggedIn: req.session.isLoggedIn || false,
+        username: req.session.username || null,
+        error: 'Page non trouvée'
+    });
+});
+
+/**
+ * Démarrage du serveur
+ */
+app.listen(PORT, () => {
+    console.log('='.repeat(50));
+    console.log('Mini Site Web - TP Maintenance Applicative');
+    console.log('='.repeat(50));
+    console.log(`Serveur démarré sur http://localhost:${PORT}`);
+    console.log('');
+    console.log('Comptes de test:');
+    console.log('  - admin / admin123 (rôle admin)');
+    console.log('  - user / user123 (rôle user)');
+    console.log('='.repeat(50));
+});
+
+export default app;

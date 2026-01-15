@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Inventaire - Mini Site Web</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header avec navigation -->
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Mini Site Web</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/products" class="active">Produits</a></li>
+                <li><a href="/auth/logout">Déconnexion (<%= username %>)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenu principal -->
+    <main>
+        <section class="total-section">
+            <div class="total-container">
+                <h2>Valeur totale de l'inventaire</h2>
+
+                <div class="total-summary">
+                    <div class="total-card">
+                        <span class="total-label">Total calculé</span>
+                        <span class="total-value"><%= total %> &euro;</span>
+                    </div>
+                    <p class="total-info">
+                        Calculé sur <strong><%= products.length %></strong> produit(s)
+                    </p>
+                </div>
+
+                <!-- Détail du calcul -->
+                <div class="calculation-details">
+                    <h3>Détail du calcul</h3>
+                    <table class="calc-table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Sous-total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% products.forEach(product => { %>
+                                <tr>
+                                    <td><%= product.name %></td>
+                                    <td><%= parseFloat(product.price).toFixed(2) %> &euro;</td>
+                                    <td><%= product.quantity %></td>
+                                    <!-- Note: Le sous-total affiché ici montre price * quantity (correct)
+                                         mais le calcul réel dans le backend utilise + (bug) -->
+                                    <td><%= (parseFloat(product.price) * product.quantity).toFixed(2) %> &euro;</td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Total attendu (prix x quantité)</strong></td>
+                                <td>
+                                    <strong>
+                                        <%= products.reduce((sum, p) => sum + (parseFloat(p.price) * p.quantity), 0).toFixed(2) %> &euro;
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr class="bug-row">
+                                <td colspan="3"><strong>Total calculé par le système</strong></td>
+                                <td><strong><%= total %> &euro;</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="total-actions">
+                    <a href="/products" class="btn btn-primary">Retour aux produits</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025-2026 - TP Maintenance Applicative - IUT du Littoral Côte d'Opale</p>
+    </footer>
+</body>
+</html>

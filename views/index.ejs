@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Mini Site Web</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header avec navigation -->
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Mini Site Web</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/" class="active">Accueil</a></li>
+                <% if (isLoggedIn) { %>
+                    <li><a href="/products">Produits</a></li>
+                    <li><a href="/auth/logout">Déconnexion (<%= username %>)</a></li>
+                <% } else { %>
+                    <li><a href="/auth/login">Connexion</a></li>
+                <% } %>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenu principal -->
+    <main>
+        <section class="hero">
+            <h2>Bienvenue sur notre site de gestion de produits</h2>
+            <p>
+                Ce mini site web permet de gérer un inventaire de produits.
+                Connectez-vous pour accéder aux fonctionnalités de gestion.
+            </p>
+
+            <% if (!isLoggedIn) { %>
+                <a href="/auth/login" class="btn btn-primary">Se connecter</a>
+            <% } else { %>
+                <a href="/products" class="btn btn-primary">Voir les produits</a>
+            <% } %>
+        </section>
+
+        <section class="features">
+            <h3>Fonctionnalités</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>Gestion CRUD</h4>
+                    <p>Créer, lire, modifier et supprimer des produits facilement.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Authentification</h4>
+                    <p>Système de connexion pour sécuriser l'accès aux données.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Inventaire</h4>
+                    <p>Suivez vos stocks et calculez la valeur totale de l'inventaire.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025-2026 - TP Maintenance Applicative - IUT du Littoral Côte d'Opale</p>
+    </footer>
+</body>
+</html>
