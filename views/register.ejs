@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Mini Site Web</title>
+    <title>Inscription - Mini Site Web</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -15,8 +15,8 @@
             </div>
             <ul class="nav-links">
                 <li><a href="/">Accueil</a></li>
-                <li><a href="/auth/login" class="active">Connexion</a></li>
-                <li><a href="/auth/register">Inscription</a></li>
+                <li><a href="/auth/login">Connexion</a></li>
+                <li><a href="/auth/register" class="active">Inscription</a></li>
             </ul>
         </nav>
     </header>
@@ -25,7 +25,7 @@
     <main>
         <section class="login-section">
             <div class="login-container">
-                <h2>Connexion</h2>
+                <h2>Inscription</h2>
 
                 <% if (error) { %>
                     <div class="alert alert-error">
@@ -33,8 +33,8 @@
                     </div>
                 <% } %>
 
-                <!-- Formulaire de connexion -->
-                <form action="/auth/login" method="POST" class="login-form">
+                <!-- Formulaire d'inscription -->
+                <form action="/auth/register" method="POST" class="login-form">
                     <div class="form-group">
                         <label for="username">Nom d'utilisateur</label>
                         <input
@@ -42,7 +42,7 @@
                             id="username"
                             name="username"
                             required
-                            placeholder="Entrez votre nom d'utilisateur"
+                            placeholder="Choisissez un nom d'utilisateur"
                         >
                     </div>
 
@@ -53,17 +53,28 @@
                             id="password"
                             name="password"
                             required
-                            placeholder="Entrez votre mot de passe"
+                            placeholder="Choisissez un mot de passe"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmer le mot de passe</label>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            required
+                            placeholder="Confirmez votre mot de passe"
                         >
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-full">
-                        Se connecter
+                        S'inscrire
                     </button>
                 </form>
 
                 <p class="form-link">
-                    Pas encore de compte ? <a href="/auth/register">S'inscrire</a>
+                    Vous avez déjà un compte ? <a href="/auth/login">Se connecter</a>
                 </p>
             </div>
         </section>

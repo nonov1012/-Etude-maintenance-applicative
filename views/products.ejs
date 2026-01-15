@@ -27,7 +27,9 @@
             <div class="products-header">
                 <h2>Liste des produits</h2>
                 <div class="products-actions">
-                    <a href="/products/add" class="btn btn-primary">Ajouter un produit</a>
+                    <% if (role === 'admin') { %>
+                        <a href="/products/add" class="btn btn-primary">Ajouter un produit</a>
+                    <% } %>
                     <a href="/products/total" class="btn btn-secondary">Calculer le total</a>
                 </div>
             </div>
@@ -60,19 +62,27 @@
                             <% products.forEach(product => { %>
                                 <tr>
                                     <td><%= product.id %></td>
-                                    <!-- FAILLE XSS potentielle: affichage direct sans échappement -->
                                     <td><%- product.name %></td>
                                     <td><%- product.description %></td>
                                     <td><%= parseFloat(product.price).toFixed(2) %> &euro;</td>
                                     <td><%= product.quantity %></td>
                                     <td class="actions">
-                                        <a href="/products/edit/<%= product.id %>" class="btn btn-small btn-edit">
-                                            Modifier
-                                        </a>
-                                        <!-- FAILLE: Pas de confirmation avant suppression -->
-                                        <a href="/products/delete/<%= product.id %>" class="btn btn-small btn-delete">
-                                            Supprimer
-                                        </a>
+                                        <% if (role === 'admin') { %>
+                                            <a href="/products/edit/<%= product.id %>" class="btn btn-small btn-edit">
+                                                Modifier
+                                            </a>
+                                            <a href="/products/delete/<%= product.id %>" class="btn btn-small btn-delete">
+                                                Supprimer
+                                            </a>
+                                        <% } else { %>
+                                            <% if (product.quantity > 0) { %>
+                                                <form action="/products/buy/<%= product.id %>" method="POST" style="display:inline;">
+                                                    <button type="submit" class="btn btn-small btn-primary">Acheter</button>
+                                                </form>
+                                            <% } else { %>
+                                                <span class="btn btn-small btn-disabled">Rupture de stock</span>
+                                            <% } %>
+                                        <% } %>
                                     </td>
                                 </tr>
                             <% }) %>

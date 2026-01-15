@@ -29,6 +29,17 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     next();
 };
 
+/**
+ * Middleware pour vérifier si l'utilisateur est admin
+ * Seuls les admins peuvent créer, modifier et supprimer des produits
+ */
+const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+    if (req.session.role !== 'admin') {
+        return res.redirect('/products');
+    }
+    next();
+};
+
 // Appliquer le middleware d'authentification à toutes les routes
 router.use(requireAuth);
 
@@ -60,9 +71,9 @@ router.get('/', async (req: Request, res: Response) => {
 
 /**
  * GET /products/add
- * Affiche le formulaire d'ajout d'un produit
+ * Affiche le formulaire d'ajout d'un produit (admin seulement)
  */
-router.get('/add', (req: Request, res: Response) => {
+router.get('/add', requireAdmin, (req: Request, res: Response) => {
     res.render('product-form', {
         product: null,
         action: 'add',
@@ -72,9 +83,9 @@ router.get('/add', (req: Request, res: Response) => {
 
 /**
  * POST /products/add
- * Traite le formulaire d'ajout d'un nouveau produit
+ * Traite le formulaire d'ajout d'un nouveau produit (admin seulement)
  */
-router.post('/add', async (req: Request, res: Response) => {
+router.post('/add', requireAdmin, async (req: Request, res: Response) => {
     const { name, description, price, quantity } = req.body;
 
     try {
@@ -97,9 +108,9 @@ router.post('/add', async (req: Request, res: Response) => {
 
 /**
  * GET /products/edit/:id
- * Affiche le formulaire de modification d'un produit
+ * Affiche le formulaire de modification d'un produit (admin seulement)
  */
-router.get('/edit/:id', async (req: Request, res: Response) => {
+router.get('/edit/:id', requireAdmin, async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
@@ -125,9 +136,9 @@ router.get('/edit/:id', async (req: Request, res: Response) => {
 
 /**
  * POST /products/edit/:id
- * Traite le formulaire de modification d'un produit
+ * Traite le formulaire de modification d'un produit (admin seulement)
  */
-router.post('/edit/:id', async (req: Request, res: Response) => {
+router.post('/edit/:id', requireAdmin, async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, description, price, quantity } = req.body;
 
@@ -151,9 +162,9 @@ router.post('/edit/:id', async (req: Request, res: Response) => {
 
 /**
  * GET /products/delete/:id
- * Supprime un produit (pas de confirmation - mauvaise UX volontaire)
+ * Supprime un produit (admin seulement, pas de confirmation - mauvaise UX volontaire)
  */
-router.get('/delete/:id', async (req: Request, res: Response) => {
+router.get('/delete/:id', requireAdmin, async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
@@ -161,6 +172,49 @@ router.get('/delete/:id', async (req: Request, res: Response) => {
         res.redirect('/products');
     } catch (error) {
         console.error('Erreur lors de la suppression du produit:', error);
+        res.redirect('/products');
+    }
+});
+
+/**
+ * POST /products/buy/:id
+ * Permet à un utilisateur d'acheter un produit (diminue la quantité de 1)
+ */
+router.post('/buy/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        // Vérifier si le produit existe et a du stock
+        const [products] = await pool.execute<RowDataPacket[]>(
+            'SELECT * FROM products WHERE id = ?',
+            [id]
+        );
+
+        if (products.length === 0) {
+            return res.redirect('/products');
+        }
+
+        const product = products[0] as Product;
+
+        if (product.quantity <= 0) {
+            return res.redirect('/products');
+        }
+
+        // Diminuer la quantité de 1
+        await pool.execute(
+            'UPDATE products SET quantity = quantity - 1 WHERE id = ?',
+            [id]
+        );
+
+        // Enregistrer l'achat
+        await pool.execute(
+            'INSERT INTO purchases (user_id, product_id, quantity, total_price) VALUES (?, ?, 1, ?)',
+            [req.session.userId, id, product.price]
+        );
+
+        res.redirect('/products');
+    } catch (error) {
+        console.error('Erreur lors de l\'achat du produit:', error);
         res.redirect('/products');
     }
 });

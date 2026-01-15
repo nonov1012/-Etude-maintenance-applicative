@@ -11,8 +11,6 @@ import mysql from 'mysql2/promise';
 
 /**
  * Configuration de la connexion MySQL
- * FAILLE DE SÉCURITÉ: Les identifiants sont stockés en dur dans le code
- * au lieu d'utiliser des variables d'environnement
  */
 const dbConfig = {
     host: 'localhost',      // Serveur MySQL

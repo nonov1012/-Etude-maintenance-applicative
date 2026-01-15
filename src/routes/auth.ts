@@ -3,10 +3,6 @@
  *
  * Ce fichier gère les routes de connexion et déconnexion des utilisateurs.
  *
- * FAILLE DE SÉCURITÉ VOLONTAIRE: Injection SQL
- * La requête de connexion utilise la concaténation de chaînes
- * au lieu de requêtes préparées, permettant l'injection SQL.
- *
  * @module routes/auth
  */
 
@@ -31,20 +27,11 @@ router.get('/login', (req: Request, res: Response) => {
 /**
  * POST /auth/login
  * Traite le formulaire de connexion
- *
- * FAILLE DE SÉCURITÉ: Injection SQL
- * La requête utilise la concaténation de chaînes directement
- * avec les données utilisateur, permettant des attaques comme:
- * - username: admin'--
- * - username: ' OR '1'='1
  */
 router.post('/login', async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     try {
-        // FAILLE: Injection SQL - Concaténation directe des entrées utilisateur
-        // Un attaquant peut se connecter avec: username = admin'-- et n'importe quel password
-        // Ou avec: username = ' OR '1'='1'--
         const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
 
         console.log('Requête SQL exécutée:', query); // Log pour debug (mauvaise pratique aussi)
@@ -67,6 +54,54 @@ router.post('/login', async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Erreur de connexion:', error);
         res.render('login', { error: 'Erreur lors de la connexion' });
+    }
+});
+
+/**
+ * GET /auth/register
+ * Affiche la page d'inscription
+ */
+router.get('/register', (req: Request, res: Response) => {
+    // Si déjà connecté, rediriger vers les produits
+    if (req.session.isLoggedIn) {
+        return res.redirect('/products');
+    }
+    res.render('register', { error: null });
+});
+
+/**
+ * POST /auth/register
+ * Traite le formulaire d'inscription (crée un compte user)
+ */
+router.post('/register', async (req: Request, res: Response) => {
+    const { username, password, confirmPassword } = req.body;
+
+    // Vérification basique des mots de passe
+    if (password !== confirmPassword) {
+        return res.render('register', { error: 'Les mots de passe ne correspondent pas' });
+    }
+
+    try {
+        // Vérifier si le nom d'utilisateur existe déjà
+        const [existingUsers] = await pool.execute<RowDataPacket[]>(
+            'SELECT id FROM users WHERE username = ?',
+            [username]
+        );
+
+        if (existingUsers.length > 0) {
+            return res.render('register', { error: 'Ce nom d\'utilisateur est déjà pris' });
+        }
+
+        await pool.execute(
+            'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+            [username, password, 'user']
+        );
+
+        // Rediriger vers la page de connexion après inscription
+        res.redirect('/auth/login');
+    } catch (error) {
+        console.error('Erreur lors de l\'inscription:', error);
+        res.render('register', { error: 'Erreur lors de l\'inscription' });
     }
 });
 

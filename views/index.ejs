@@ -20,6 +20,7 @@
                     <li><a href="/auth/logout">Déconnexion (<%= username %>)</a></li>
                 <% } else { %>
                     <li><a href="/auth/login">Connexion</a></li>
+                    <li><a href="/auth/register">Inscription</a></li>
                 <% } %>
             </ul>
         </nav>
@@ -36,6 +37,7 @@
 
             <% if (!isLoggedIn) { %>
                 <a href="/auth/login" class="btn btn-primary">Se connecter</a>
+                <a href="/auth/register" class="btn btn-secondary">S'inscrire</a>
             <% } else { %>
                 <a href="/products" class="btn btn-primary">Voir les produits</a>
             <% } %>

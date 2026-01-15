@@ -9,8 +9,6 @@ USE mini_site;
 
 -- ============================================================
 -- Table des utilisateurs
--- FAILLE DE SÉCURITÉ: Les mots de passe sont stockés en CLAIR
--- au lieu d'être hashés (ex: bcrypt)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -35,11 +33,10 @@ CREATE TABLE IF NOT EXISTS products (
 
 -- ============================================================
 -- Données de test - Utilisateurs
--- FAILLE: Mots de passe faibles et stockés en clair
 -- ============================================================
 INSERT INTO users (username, password, role) VALUES
-    ('admin', 'admin123', 'admin'),  -- Mot de passe faible!
-    ('user', 'user123', 'user');     -- Mot de passe faible!
+    ('admin', 'admin123', 'admin'),
+    ('user', 'user123', 'user');
 
 -- ============================================================
 -- Données de test - Produits
@@ -50,3 +47,18 @@ INSERT INTO products (name, description, price, quantity) VALUES
     ('Clavier Mécanique', 'Clavier gaming mécanique RGB Cherry MX', 129.99, 30),
     ('Écran 27 pouces', 'Moniteur LED 27" Full HD IPS', 249.99, 20),
     ('Webcam HD', 'Webcam 1080p avec microphone intégré', 59.99, 50);
+
+-- ============================================================
+-- Table des achats
+-- Enregistre les achats effectués par les utilisateurs
+-- ============================================================
+CREATE TABLE IF NOT EXISTS purchases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT DEFAULT 1,
+    total_price DECIMAL(10, 2) NOT NULL,
+    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);

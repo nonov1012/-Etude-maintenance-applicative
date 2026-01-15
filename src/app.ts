@@ -40,19 +40,13 @@ app.set('views', path.join(__dirname, '../views'));
 
 /**
  * Configuration des sessions
- *
- * FAILLE DE SÉCURITÉ: Le secret est faible et stocké en dur
- * En production, il devrait être:
- * - Stocké dans une variable d'environnement
- * - Long et aléatoire
- * - Différent pour chaque environnement
  */
 app.use(session({
-    secret: 'secret123',  // FAILLE: Secret faible et en dur!
+    secret: 'secret123',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,    // FAILLE: Devrait être true en HTTPS
+        secure: false,
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000  // 24 heures
     }

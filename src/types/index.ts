@@ -15,7 +15,7 @@ import { Session } from 'express-session';
 export interface User {
     id: number;
     username: string;
-    password: string;  // FAILLE: Mot de passe stocké en clair (pas de hash)
+    password: string;
     role: 'admin' | 'user';
 }
 
